@@ -1,0 +1,60 @@
+/* Design tokens. High-contrast mode overrides these same variables. */
+:root {
+  --ink: #12263a;      /* main text */
+  --paper: #f6f8fa;    /* page background */
+  --surface: #ffffff;  /* form panels */
+  --brand: #0b5d6b;    /* deep teal: buttons, links */
+  --brand-ink: #ffffff;
+  --line: #b9c4cf;     /* borders */
+  --danger: #a4161a;
+}
+:root[data-contrast="high"] { --ink: #000; --paper: #fff; --brand: #00363f; --line: #000; --danger: #7a0000; }
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Atkinson Hyperlegible", system-ui, sans-serif; font-size: 1.125rem; line-height: 1.6; color: var(--ink); background: var(--paper); }
+h1 { font-size: 2.2rem; line-height: 1.2; max-width: 22ch; }
+h2 { font-size: 1.5rem; }
+p, li { max-width: 62ch; }
+
+/* Keyboard focus is always clearly visible. */
+:focus-visible { outline: 4px solid #f2a900; outline-offset: 3px; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 1rem; top: 1rem; background: var(--surface); padding: .5rem 1rem; z-index: 10; }
+
+.header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: var(--surface); border-bottom: 2px solid var(--line); }
+.brand { font-weight: 700; font-size: 1.5rem; color: var(--brand); text-decoration: none; }
+.call { color: var(--ink); font-weight: 700; }
+.a11y { display: flex; gap: .5rem; }
+.a11y button { font: inherit; min-height: 44px; min-width: 44px; padding: 0 .75rem; border: 2px solid var(--ink); background: var(--surface); color: var(--ink); border-radius: 8px; cursor: pointer; }
+.a11y button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+
+.button { display: inline-block; font: inherit; font-weight: 700; font-size: 1.3rem; padding: 1rem 2.25rem; min-height: 56px; background: var(--brand); color: var(--brand-ink); border: 0; border-radius: 10px; text-decoration: none; cursor: pointer; }
+.button:disabled { opacity: .6; cursor: wait; }
+
+/* Home */
+.hero { position: relative; min-height: 70vh; display: flex; align-items: center; color: #fff; overflow: hidden; background: #0b2a33; }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+.hero-text { position: relative; padding: 2rem 1.5rem; max-width: 46rem; }
+.hero-text .button { background: #f2a900; color: #12263a; }
+.features { padding: 2rem 1.5rem; max-width: 60rem; margin: 0 auto; }
+.features li { margin-bottom: 1rem; }
+@media (prefers-reduced-motion: reduce) { .hero-video { display: none; } }
+
+/* Form */
+.page { max-width: 42rem; margin: 0 auto; padding: 1.5rem; }
+fieldset { background: var(--surface); border: 2px solid var(--line); border-radius: 12px; margin: 0 0 1.5rem; padding: 1rem 1.25rem 1.25rem; }
+legend { font-weight: 700; font-size: 1.3rem; padding: 0 .5rem; }
+.field { margin-top: 1rem; }
+label { display: block; font-weight: 700; }
+.hint { margin: .15rem 0 .4rem; font-size: 1rem; }
+input[type="text"], input[type="tel"], input[type="email"], input[type="datetime-local"], select { width: 100%; font: inherit; padding: .75rem; min-height: 52px; border: 2px solid var(--ink); border-radius: 8px; background: var(--surface); color: var(--ink); }
+.choice { display: flex; gap: .75rem; align-items: flex-start; margin: .75rem 0; font-weight: 400; }
+.choice input { width: 28px; height: 28px; flex: none; }
+.error { color: var(--danger); font-weight: 700; border-left: 6px solid var(--danger); padding-left: .75rem; }
+.error::before { content: "Problem: "; }
+
+/* Fare + confirmation */
+.fare { background: var(--surface); border: 2px solid var(--brand); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+.fare h2 { margin-top: 0; }
+dl div { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-bottom: 1px solid var(--line); }
+dt { font-weight: 700; } dd { margin: 0; text-align: right; }
