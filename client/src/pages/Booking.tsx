@@ -9,6 +9,8 @@ import { LANGUAGES } from "../utils/languages";
 /** The booking form. Fields are grouped so each section is one clear job. */
 export default function Booking() {
   const navigate = useNavigate();
+  // Today's date as YYYY-MM-DD in local time; used so past dates can't be chosen.
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
   // Passenger details
   const [name, setName] = useState("");
@@ -19,7 +21,8 @@ export default function Booking() {
   const [pickup, setPickup] = useState<Place | null>(null);
   const [dropoff, setDropoff] = useState<Place | null>(null);
   const [asap, setAsap] = useState(false);
-  const [scheduledTime, setScheduledTime] = useState("");
+  const [scheduledDate, setScheduledDate] = useState(""); // e.g. 2026-09-30
+  const [scheduledTime, setScheduledTime] = useState(""); // e.g. 10:30
   const [extraCare, setExtraCare] = useState(false);
   const [language, setLanguage] = useState("English");
   // Screen state
@@ -43,12 +46,14 @@ export default function Booking() {
     if (!pickup || !dropoff) return setError("Please pick your addresses from the suggestion list.");
     setBusy(true);
     try {
+      // Join the two boxes into one local date-time such as "2026-09-30T10:30".
+      const when = `${scheduledDate}T${scheduledTime}`;
       const result = await submitBooking({
         name, phone, secondaryPhone, email, pickup, dropoff, asap, extraCare,
-        scheduledTime: asap ? null : new Date(scheduledTime).toISOString(),
+        scheduledTime: asap ? null : new Date(when).toISOString(),
         preferredLanguage: language,
       });
-      navigate("/confirmation", { state: { ...result, name, pickup, dropoff, asap, scheduledTime, extraCare, language } });
+      navigate("/confirmation", { state: { ...result, name, pickup, dropoff, asap, scheduledTime: when, extraCare, language } });
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -84,8 +89,12 @@ export default function Booking() {
           <label className="choice"><input type="radio" name="when" checked={!asap} onChange={() => setAsap(false)} /> Schedule for later</label>
           <label className="choice"><input type="radio" name="when" checked={asap} onChange={() => setAsap(true)} /> I need a ride now (extra fee applies)</label>
           {!asap && (
-            <div className="field"><label htmlFor="time">Date and time</label>
-              <input id="time" type="datetime-local" required value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} /></div>
+            <>
+              <div className="field"><label htmlFor="date">Date</label>
+                <input id="date" type="date" required min={today} value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} /></div>
+              <div className="field"><label htmlFor="time">Pickup time</label>
+                <input id="time" type="time" required value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} /></div>
+            </>
           )}
         </fieldset>
 
