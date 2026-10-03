@@ -18,5 +18,6 @@ CREATE TABLE IF NOT EXISTS bookings (
   preferred_language TEXT NOT NULL,
   estimated_fare     NUMERIC(8,2) NOT NULL,
   status             TEXT NOT NULL DEFAULT 'new',   -- new | assigned | completed | cancelled
+  payment_status     TEXT NOT NULL DEFAULT 'unpaid',  -- unpaid | paid
   created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

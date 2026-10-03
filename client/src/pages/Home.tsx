@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 /** Landing page: looping video, plain-language promise, one big button. */
 export default function Home() {
   return (
@@ -11,7 +9,8 @@ export default function Home() {
         <div className="hero-text">
           <h1>A driver who speaks your language, and takes care of you.</h1>
           <p>Book a ride for yourself or a parent. Pick a time, tell us your language, and we do the rest.</p>
-          <Link className="button" to="/book">Book a ride</Link>
+          {/* Opens the booking form in a new tab. */}
+          <a className="button" href="/book" target="_blank" rel="noopener noreferrer">Book a ride<span className="sr-only"> (opens in a new tab)</span></a>
         </div>
       </section>
 

@@ -31,3 +31,8 @@ export async function listBookings() {
   const { rows } = await pool.query("SELECT * FROM bookings ORDER BY created_at DESC");
   return rows;
 }
+
+/** Marks a booking as paid (called when Stripe confirms the payment). */
+export async function markPaid(reference: string) {
+  await pool.query("UPDATE bookings SET payment_status = 'paid' WHERE reference = $1", [reference]);
+}

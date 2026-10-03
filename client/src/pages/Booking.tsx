@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PhoneVerify from "../components/PhoneVerify";
+import DateTimeWheel from "../components/DateTimeWheel";
 import PlacesInput from "../components/PlacesInput";
 import FareEstimate from "../components/FareEstimate";
 import { getEstimate, submitBooking } from "../api/bookings";
@@ -21,8 +23,8 @@ export default function Booking() {
   const [pickup, setPickup] = useState<Place | null>(null);
   const [dropoff, setDropoff] = useState<Place | null>(null);
   const [asap, setAsap] = useState(false);
-  const [scheduledDate, setScheduledDate] = useState(""); // e.g. 2026-09-30
-  const [scheduledTime, setScheduledTime] = useState(""); // e.g. 10:30
+  const [when, setWhen] = useState(""); // chosen ride time, e.g. 2026-09-30T10:30
+  const [token, setToken] = useState(""); // proof the phone number was verified
   const [extraCare, setExtraCare] = useState(false);
   const [language, setLanguage] = useState("English");
   // Screen state
@@ -39,24 +41,25 @@ export default function Booking() {
       .catch((e) => setError(e.message));
   }, [pickup, dropoff, asap, extraCare]);
 
-  // Sends the booking, then shows the confirmation page.
+  // Saves the booking, then sends the customer to Stripe's secure payment page.
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
+    if (!token) return setError("Please verify your phone number first.");
     if (!pickup || !dropoff) return setError("Please pick your addresses from the suggestion list.");
+    if (!asap && !when) return setError("Please choose a date and time.");
     setBusy(true);
     try {
-      // Join the two boxes into one local date-time such as "2026-09-30T10:30".
-      const when = `${scheduledDate}T${scheduledTime}`;
       const result = await submitBooking({
         name, phone, secondaryPhone, email, pickup, dropoff, asap, extraCare,
         scheduledTime: asap ? null : new Date(when).toISOString(),
-        preferredLanguage: language,
+        preferredLanguage: language, verifiedToken: token,
       });
-      navigate("/confirmation", { state: { ...result, name, pickup, dropoff, asap, scheduledTime: when, extraCare, language } });
+      // Remember the summary so the confirmation page can show it after payment.
+      sessionStorage.setItem("lastBooking", JSON.stringify({ reference: result.reference, fare: result.fare, name, pickup, dropoff, asap, scheduledTime: when, extraCare, language }));
+      window.location.href = result.checkoutUrl;
     } catch (err) {
       setError((err as Error).message);
-    } finally {
       setBusy(false);
     }
   }
@@ -65,12 +68,14 @@ export default function Booking() {
     <main className="page">
       <h1>Book your ride</h1>
       <form onSubmit={handleSubmit}>
+        {/* Step 1: the phone number comes first and must be verified by text message. */}
+        <PhoneVerify onVerified={(p, t) => { setPhone(p); setToken(t); }} />
+        {/* The rest of the form stays locked until the phone is verified. */}
+        <fieldset className="plain" disabled={!token}>
         <fieldset>
           <legend>About the passenger</legend>
           <div className="field"><label htmlFor="name">Full name</label>
             <input id="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} /></div>
-          <div className="field"><label htmlFor="phone">Phone number</label>
-            <input id="phone" type="tel" required autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
           <div className="field"><label htmlFor="phone2">Family contact phone</label>
             <p className="hint" id="phone2-hint">We call this person if we cannot reach you.</p>
             <input id="phone2" type="tel" required aria-describedby="phone2-hint" value={secondaryPhone} onChange={(e) => setSecondaryPhone(e.target.value)} /></div>
@@ -88,14 +93,7 @@ export default function Booking() {
           <legend>When do you need the ride?</legend>
           <label className="choice"><input type="radio" name="when" checked={!asap} onChange={() => setAsap(false)} /> Schedule for later</label>
           <label className="choice"><input type="radio" name="when" checked={asap} onChange={() => setAsap(true)} /> I need a ride now (extra fee applies)</label>
-          {!asap && (
-            <>
-              <div className="field"><label htmlFor="date">Date</label>
-                <input id="date" type="date" required min={today} value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} /></div>
-              <div className="field"><label htmlFor="time">Pickup time</label>
-                <input id="time" type="time" required value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} /></div>
-            </>
-          )}
+          {!asap && <DateTimeWheel onChange={setWhen} />}
         </fieldset>
 
         <fieldset>
@@ -109,9 +107,11 @@ export default function Booking() {
             </select></div>
         </fieldset>
 
+        </fieldset>
+
         {estimate && <FareEstimate estimate={estimate} />}
         {error && <p className="error" role="alert">{error}</p>}
-        <button className="button" type="submit" disabled={busy}>{busy ? "Booking..." : "Book my ride"}</button>
+        <button className="button" type="submit" disabled={busy}>{busy ? "Opening payment..." : "Book and pay"}</button>
       </form>
     </main>
   );
