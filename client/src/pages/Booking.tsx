@@ -67,11 +67,14 @@ export default function Booking() {
   return (
     <main className="page">
       <h1>Book your ride</h1>
+      {!token && <p className="lead">First, let us confirm your phone number. It only takes a moment.</p>}
       <form onSubmit={handleSubmit}>
         {/* Step 1: the phone number comes first and must be verified by text message. */}
         <PhoneVerify onVerified={(p, t) => { setPhone(p); setToken(t); }} />
-        {/* The rest of the form stays locked until the phone is verified. */}
-        <fieldset className="plain" disabled={!token}>
+        {/* Everything below appears only after the phone number is verified. */}
+        {token && (
+        <div className="reveal">
+        <fieldset className="plain">
         <fieldset>
           <legend>About the passenger</legend>
           <div className="field"><label htmlFor="name">Full name</label>
@@ -112,6 +115,8 @@ export default function Booking() {
         {estimate && <FareEstimate estimate={estimate} />}
         {error && <p className="error" role="alert">{error}</p>}
         <button className="button" type="submit" disabled={busy}>{busy ? "Opening payment..." : "Book and pay"}</button>
+        </div>
+        )}
       </form>
     </main>
   );
