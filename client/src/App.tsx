@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Booking from "./pages/Booking";
+import About from "./pages/About";
+import WhoWeAre from "./pages/WhoWeAre";
 import Confirmation from "./pages/Confirmation";
 
 /** Maps each web address to a page. */
@@ -14,6 +16,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/book" element={<Booking />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/who-we-are" element={<WhoWeAre />} />
           <Route path="/confirmation" element={<Confirmation />} />
         </Routes>
       </div>

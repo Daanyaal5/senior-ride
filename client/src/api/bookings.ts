@@ -6,6 +6,7 @@ export interface BookingRequest {
   pickup: Place; dropoff: Place;
   asap: boolean; scheduledTime: string | null;
   extraCare: boolean; preferredLanguage: string;
+  verifiedToken: string; // proof from the phone check
 }
 
 /** Small helper: POSTs JSON and throws the server's error message if something fails. */
@@ -26,4 +27,10 @@ export const getEstimate = (b: Pick<BookingRequest, "pickup" | "dropoff" | "asap
 
 /** Submits the finished booking. */
 export const submitBooking = (b: BookingRequest) =>
-  post<{ reference: string; fare: FareBreakdown }>("/api/bookings", b);
+  post<{ reference: string; fare: FareBreakdown; checkoutUrl: string }>("/api/bookings", b);
+
+/** Texts a 6-digit code to the phone number. */
+export const sendCode = (phone: string) => post<{ ok: true }>("/api/verify/send", { phone });
+
+/** Checks the code. On success the server returns a token that the booking must include. */
+export const checkCode = (phone: string, code: string) => post<{ token: string }>("/api/verify/check", { phone, code });

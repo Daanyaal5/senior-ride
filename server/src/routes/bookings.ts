@@ -2,6 +2,9 @@ import { Router, Request, Response } from "express";
 import { getRouteInfo } from "../services/maps.js";
 import { calculateFare } from "../services/fare.js";
 import { createBooking, listBookings } from "../db/bookingsRepo.js";
+import { createCheckoutSession } from "../services/stripe.js";
+import { isTokenValid, toE164 } from "../services/verify.js";
+import { bookingLimiter } from "../middleware/rateLimit.js";
 
 const router = Router();
 
@@ -34,12 +37,16 @@ router.post("/estimate", async (req: Request, res: Response) => {
 });
 
 // POST /api/bookings: validates, recalculates the fare on the server, saves the booking.
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", bookingLimiter, async (req: Request, res: Response) => {
   const b = req.body;
   const missing = ["name", "phone", "secondaryPhone", "email", "preferredLanguage"].filter(
     (k) => !b[k] || typeof b[k] !== "string" || !b[k].trim()
   );
   if (missing.length) return res.status(400).json({ error: `Please fill in: ${missing.join(", ")}.` });
+  // The phone number must have been verified by text message first.
+  if (!isTokenValid(toE164(b.phone), b.verifiedToken)) {
+    return res.status(403).json({ error: "Please verify your phone number first." });
+  }
   if (!isPlace(b.pickup) || !isPlace(b.dropoff)) {
     return res.status(400).json({ error: "Please choose a pickup and a destination." });
   }
@@ -56,7 +63,9 @@ router.post("/", async (req: Request, res: Response) => {
       asap: !!b.asap, scheduledTime: b.asap ? null : b.scheduledTime,
       extraCare: !!b.extraCare, preferredLanguage: b.preferredLanguage, estimatedFare: fare.total,
     });
-    res.status(201).json({ reference, fare });
+    // Send the customer to Stripe to pay the estimated fare.
+    const checkoutUrl = await createCheckoutSession(reference, fare.total, b.email.trim());
+    res.status(201).json({ reference, fare, checkoutUrl });
   } catch {
     res.status(500).json({ error: "Something went wrong saving your booking. Please call us to book." });
   }
