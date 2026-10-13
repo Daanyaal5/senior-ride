@@ -1,11 +1,13 @@
 /* Design tokens. High-contrast mode overrides these same variables. */
 :root {
-  --ink: #12263a;      /* main text */
-  --paper: #f6f8fa;    /* page background */
-  --surface: #ffffff;  /* form panels */
-  --brand: #0b5d6b;    /* deep teal: buttons, links */
+  --ink: #0b2540;       /* main text: deep navy */
+  --paper: #f3f7fb;     /* page background */
+  --surface: #ffffff;   /* cards */
+  --brand: #0063a1;     /* Halifax flag blue */
+  --brand-dark: #003a63;
+  --accent: #faa32c;    /* Halifax flag gold (use as a background, never as small text) */
   --brand-ink: #ffffff;
-  --line: #b9c4cf;     /* borders */
+  --line: #c9d6e2;
   --danger: #a4161a;
 }
 :root[data-contrast="high"] { --ink: #000; --paper: #fff; --brand: #00363f; --line: #000; --danger: #7a0000; }
@@ -86,3 +88,63 @@ fieldset:disabled { opacity: .45; }
 .wheel-pad { height: 48px; }
 .wheel-row { height: 48px; line-height: 48px; text-align: center; scroll-snap-align: center; cursor: pointer; font-size: 1.15rem; color: #5a6b7b; }
 .wheel-row[aria-selected="true"] { color: var(--ink); font-weight: 700; }
+
+/* ===== Modern theme: Halifax flag blue + gold ===== */
+:root { --radius: 22px; --shadow: 0 12px 32px rgba(0, 58, 99, .12); }
+h1, h2 { color: var(--brand-dark); }
+:root[data-contrast="high"] h1, :root[data-contrast="high"] h2 { color: #000; }
+.lead { font-size: 1.25rem; }
+
+/* Header and buttons */
+.header { position: sticky; top: 0; z-index: 5; background: rgba(255, 255, 255, .94); backdrop-filter: blur(8px); border-bottom: 0; box-shadow: 0 2px 16px rgba(0, 58, 99, .12); }
+.button { border-radius: 999px; box-shadow: 0 8px 20px rgba(0, 99, 161, .3); transition: transform .15s; }
+.button:hover { transform: translateY(-2px); }
+.button.gold { background: var(--accent); color: var(--brand-dark); box-shadow: 0 8px 20px rgba(250, 163, 44, .4); }
+.button.ghost { background: transparent; color: #fff; border: 2px solid #fff; box-shadow: none; }
+.nav .nav-book { border-radius: 999px; }
+
+/* Form: soft cards and rounded fields */
+fieldset { border: 0; border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; }
+fieldset.plain { box-shadow: none; padding: 0; }
+legend { color: var(--brand-dark); }
+input[type="text"], input[type="tel"], input[type="email"], input[type="date"], input[type="time"], select { border: 2px solid var(--line); border-radius: 14px; background: #f9fbfd; }
+input:focus, select:focus { border-color: var(--brand); background: #fff; }
+.wheel { border-color: var(--line); border-radius: 14px; }
+.fare { border: 0; border-radius: var(--radius); box-shadow: var(--shadow); border-left: 8px solid var(--accent); }
+.verified { border: 0; border-left: 8px solid var(--accent); border-radius: var(--radius); box-shadow: var(--shadow); }
+.reveal { animation: rise .45s ease; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .reveal { animation: none; } .button { transition: none; } }
+
+/* Hero: blue gradient with a faint gold saltire (X) as a nod to the Halifax flag */
+.hero { background:
+  linear-gradient(45deg, transparent 48.5%, rgba(250, 163, 44, .22) 49% 51%, transparent 51.5%),
+  linear-gradient(-45deg, transparent 48.5%, rgba(250, 163, 44, .22) 49% 51%, transparent 51.5%),
+  linear-gradient(135deg, var(--brand-dark), var(--brand)); }
+.hero h1 { color: #fff; }
+.hero-text .button { margin-right: .75rem; margin-bottom: .75rem; }
+
+/* Home sections */
+.section { max-width: 66rem; margin: 0 auto; padding: 3rem 1.5rem; }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 2rem; align-items: center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.25rem; }
+.card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border-top: 6px solid var(--accent); }
+.card h3 { margin-top: 0; color: var(--brand-dark); }
+.step-num { display: inline-grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 700; }
+.band { background: var(--brand-dark); color: #fff; }
+.band h2 { color: #fff; }
+.quote { font-size: 1.35rem; border-left: 8px solid var(--accent); margin: 0; padding-left: 1.25rem; }
+
+/* Photos: real image if the file exists, otherwise a labelled placeholder */
+.photo { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); display: block; }
+.photo.placeholder { display: grid; place-items: center; text-align: center; background: #e3edf6; border: 3px dashed #7fa6c6; color: var(--brand-dark); box-shadow: none; font-weight: 700; }
+.photo.placeholder small { font-weight: 400; }
+
+/* Footer */
+.footer { background: var(--brand-dark); color: #dbe7f1; margin-top: 3rem; border-top: 8px solid var(--accent); }
+.footer-grid { max-width: 66rem; margin: 0 auto; padding: 2.5rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 2rem; }
+.footer h2 { color: #fff; font-size: 1.1rem; }
+.footer a { color: #fff; display: block; padding: .2rem 0; }
+.footer p { margin: .25rem 0; }
+.footer-bottom { text-align: center; padding: 1rem; border-top: 1px solid rgba(255, 255, 255, .2); font-size: 1rem; }
+.legal h2 { margin-top: 2rem; }

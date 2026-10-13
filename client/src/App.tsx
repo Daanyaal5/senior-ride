@@ -4,6 +4,9 @@ import Home from "./pages/Home";
 import Booking from "./pages/Booking";
 import About from "./pages/About";
 import WhoWeAre from "./pages/WhoWeAre";
+import Footer from "./components/Footer";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import Confirmation from "./pages/Confirmation";
 
 /** Maps each web address to a page. */
@@ -18,9 +21,12 @@ export default function App() {
           <Route path="/book" element={<Booking />} />
           <Route path="/about" element={<About />} />
           <Route path="/who-we-are" element={<WhoWeAre />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/confirmation" element={<Confirmation />} />
         </Routes>
       </div>
+      <Footer />
     </>
   );
 }
