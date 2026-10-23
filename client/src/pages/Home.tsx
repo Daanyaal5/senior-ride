@@ -1,65 +1,79 @@
 import Photo from "../components/Photo";
+import HeroVideo from "../components/HeroVideo";
+import PriceList from "../components/PriceList";
+import ContactOptions from "../components/ContactOptions";
+import { TAGLINE } from "../utils/brand";
 
 /**
- * Landing page, laid out in simple blocks: hero, why us, how it works, driver photo, review, call to action.
- * Photos go in client/public/images/ using the file names below.
+ * Landing page: hero, who we serve, prices, how it works, long distance, policy.
+ * Photos go in client/public/images/.
  */
 export default function Home() {
   return (
     <main>
       <section className="hero">
-        <video className="hero-video" autoPlay muted loop playsInline aria-hidden="true">
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
+        <HeroVideo />
         <div className="hero-text">
-          <h1>A driver who speaks your language, and takes care of you.</h1>
-          <p>Safe, comfortable rides around Halifax for yourself or a parent. Pick a time, tell us your language, and we do the rest.</p>
+          <p className="hero-tagline">{TAGLINE}</p>
+          <h1>Pre-arranged, accessible rides in Halifax, and to and from the airport.</h1>
+          <p>For seniors, people with mobility needs, wheelchair users and children who need special care. Book in advance, see your price, and pay online.</p>
           {/* Opens the booking form in a new tab. */}
           <a className="button gold" href="/book" target="_blank" rel="noopener noreferrer">Book a ride<span className="sr-only"> (opens in a new tab)</span></a>
-          <a className="button ghost" href="#how">How it works</a>
+          <a className="button ghost" href="#prices">See prices</a>
         </div>
       </section>
 
       <section className="section split">
         <div>
-          <h2>We understand.</h2>
-          <p>Getting to an appointment, a visit or the shops should never be stressful. We offer more than a ride: a patient driver, a clear price, and a family member we can call if we cannot reach you.</p>
+          <h2>We are not a taxi service.</h2>
+          <p>We provide pre-arranged transportation for people who need a little more care: seniors, people with accessibility and mobility needs, wheelchair users, and children who need special care.</p>
+          <p>We are also professional for airport pickup and drop-off.</p>
         </div>
-        <Photo src="/images/driver-and-passenger.jpg" alt="A driver helping a passenger into the car" hint="Driver helping a passenger, 1200×800" />
+        <Photo src="/images/driver-and-passenger.webp" alt="A driver helping a passenger into the car" hint="Driver helping a passenger, 1200×800" />
       </section>
 
       <section className="section">
-        <h2>Why families choose us</h2>
+        <h2>What we offer</h2>
         <div className="cards">
-          <div className="card"><h3>Your language</h3><p>Tell us what you speak. We will try our best to match you with a driver who speaks it.</p></div>
-          <div className="card"><h3>Extra Care</h3><p>Your driver helps you in and out of the car and makes sure you are settled.</p></div>
-          <div className="card"><h3>Family contact</h3><p>If we cannot reach you, we call the person you choose.</p></div>
-          <div className="card"><h3>Price up front</h3><p>See your estimated fare before you book, and pay securely online.</p></div>
+          <div className="card"><h3>Airport pickup and drop-off</h3><p>Fixed prices to and from Halifax Stanfield airport.</p></div>
+          <div className="card"><h3>Wheelchair accessible</h3><p>Tell us in the booking notes or call us, and we send the right vehicle.</p></div>
+          <div className="card"><h3>Extra Care</h3><p>Your driver helps you in and out and stays with you as needed.</p></div>
+          <div className="card"><h3>Your language</h3><p>We try our best to match you with a driver who speaks your language.</p></div>
         </div>
       </section>
 
-      <section className="band" id="how">
+      <section className="band" id="prices">
         <div className="section">
-          <h2>How it works</h2>
-          <div className="cards">
-            <div><span className="step-num">1</span><h3>Confirm your phone</h3><p>We text you a short code so we know it is really you.</p></div>
-            <div><span className="step-num">2</span><h3>Choose where and when</h3><p>Pick your addresses and roll the wheels to set your time.</p></div>
-            <div><span className="step-num">3</span><h3>Pay and relax</h3><p>Pay securely online. We call to confirm your driver.</p></div>
-          </div>
+          <h2>Prices</h2>
+          <p>Fixed prices. Tax included. Same price in both directions.</p>
+          <PriceList />
         </div>
       </section>
 
-      <section className="section split">
-        <Photo src="/images/our-drivers.jpg" alt="Our friendly drivers" hint="Your drivers, 1200×800" />
-        <div>
-          <h2>Meet our drivers.</h2>
-          <p>Our drivers speak many languages and take the time to help. Add their names, photos and languages here when you are ready.</p>
+      <section className="section" id="how">
+        <h2>How to book</h2>
+        <div className="cards">
+          <div><span className="step-num">1</span><h3>Choose where and when</h3><p>Type your addresses or tap "airport", and pick the time.</p></div>
+          <div><span className="step-num">2</span><h3>See your price</h3><p>The full price appears straight away, tax included.</p></div>
+          <div><span className="step-num">3</span><h3>Pay and you're booked</h3><p>Pay by card, Apple Pay or Interac e-Transfer, or pay the driver in cash.</p></div>
         </div>
       </section>
 
       <section className="section">
-        {/* Replace with a REAL customer review, with their permission. */}
-        <blockquote className="quote">Add a real customer review here.</blockquote>
+        <h2>Long distance or another area?</h2>
+        <ContactOptions />
+      </section>
+
+      <section className="section">
+        <div className="policy-box">
+          <h2>Our booking policy, in short</h2>
+          <ul>
+            <li>All rides are booked in advance. Pay by card, Apple Pay, e-Transfer, or cash to the driver.</li>
+            <li>We may cancel a ride at any time, even after payment. If we do, you get a 100% refund within 5 business days.</li>
+            <li className="warning">Waiting time: $20 for every 30 minutes the driver waits.</li>
+          </ul>
+          <a href="/terms">Read the full policy</a>
+        </div>
       </section>
     </main>
   );

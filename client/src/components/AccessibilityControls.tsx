@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 
-const LEVELS = [100, 115, 130, 150]; // page text size in percent. Bigger steps so the change is obvious.
+const LEVELS = [100, 115, 130, 150]; // page text size in percent
 
-/** A−  A  A+ buttons plus a high-contrast switch. Choices are remembered between visits. */
+/**
+ * A small floating "Aa" button in the bottom corner. Tapping it opens the text-size
+ * and contrast options, so they never take up space at the top of the screen.
+ */
 export default function AccessibilityControls() {
+  const [open, setOpen] = useState(false);
   // Read the saved level, ignoring anything invalid so the buttons can never get stuck.
   const [level, setLevel] = useState(() => {
     const saved = Number(localStorage.getItem("textLevel"));
@@ -20,12 +24,17 @@ export default function AccessibilityControls() {
   }, [level, contrast]);
 
   return (
-    <div className="a11y" role="group" aria-label="Display settings">
-      <button type="button" disabled={level === 0} onClick={() => setLevel(level - 1)} aria-label="Smaller text">A−</button>
-      <button type="button" onClick={() => setLevel(0)} aria-label="Reset text size">A</button>
-      <button type="button" disabled={level === LEVELS.length - 1} onClick={() => setLevel(level + 1)} aria-label="Larger text">A+</button>
-      <span className="a11y-size" aria-live="polite">Text {LEVELS[level]}%</span>
-      <button type="button" aria-pressed={contrast} onClick={() => setContrast(!contrast)}>High contrast</button>
+    <div className="a11y-float">
+      {open && (
+        <div className="a11y a11y-panel" role="group" aria-label="Display settings">
+          <button type="button" disabled={level === 0} onClick={() => setLevel(level - 1)} aria-label="Smaller text">A−</button>
+          <button type="button" onClick={() => setLevel(0)} aria-label="Reset text size">A</button>
+          <button type="button" disabled={level === LEVELS.length - 1} onClick={() => setLevel(level + 1)} aria-label="Larger text">A+</button>
+          <span className="a11y-size" aria-live="polite">Text {LEVELS[level]}%</span>
+          <button type="button" aria-pressed={contrast} onClick={() => setContrast(!contrast)}>High contrast</button>
+        </div>
+      )}
+      <button type="button" className="a11y-toggle" aria-expanded={open} aria-label="Display settings: text size and contrast" onClick={() => setOpen(!open)}>Aa</button>
     </div>
   );
 }

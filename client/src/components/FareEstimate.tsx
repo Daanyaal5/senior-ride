@@ -1,22 +1,20 @@
-import { Estimate } from "../types";
+import { FareBreakdown } from "../types";
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 
-/** Itemised estimated fare. Only shows extra lines when they apply. */
-export default function FareEstimate({ estimate }: { estimate: Estimate }) {
-  const { fare } = estimate;
+/** The price, itemised. Tax is already included. */
+export default function FareEstimate({ fare }: { fare: FareBreakdown }) {
   return (
-    <section className="fare" aria-live="polite" aria-label="Estimated fare">
-      <h2>Estimated fare: {money(fare.total)}</h2>
-      <p>About {estimate.distanceKm.toFixed(1)} km, around {Math.round(estimate.durationMin)} minutes.</p>
+    <section className="fare" aria-live="polite" aria-label="Your price">
+      <h2>Your price: {money(fare.total)}</h2>
+      <p>{fare.route}. Tax included.</p>
       <dl>
-        <div><dt>Starting fare</dt><dd>{money(fare.baseFare)}</dd></div>
-        <div><dt>Distance</dt><dd>{money(fare.distanceFare)}</dd></div>
-        <div><dt>Travel time</dt><dd>{money(fare.timeFare)}</dd></div>
-        {fare.extraCareFee > 0 && <div><dt>Extra Care</dt><dd>{money(fare.extraCareFee)}</dd></div>}
-        {fare.asapFee > 0 && <div><dt>Ride-now fee</dt><dd>{money(fare.asapFee)}</dd></div>}
+        <div><dt>Trip</dt><dd>{money(fare.tripFare)}</dd></div>
+        {fare.urgentFee > 0 && <div><dt>Urgent ride fee</dt><dd>{money(fare.urgentFee)}</dd></div>}
+        {fare.extraCareFee > 0 && (
+          <div><dt>Extra Care ({fare.extraCareHours} {fare.extraCareHours === 1 ? "hour" : "hours"})</dt><dd>{money(fare.extraCareFee)}</dd></div>
+        )}
       </dl>
-      <p className="hint">This is an estimate. Traffic can change the final amount slightly.</p>
     </section>
   );
 }

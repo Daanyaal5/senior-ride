@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Booking from "./pages/Booking";
 import About from "./pages/About";
 import WhoWeAre from "./pages/WhoWeAre";
+import AccessibilityControls from "./components/AccessibilityControls";
 import Footer from "./components/Footer";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -27,6 +28,7 @@ export default function App() {
         </Routes>
       </div>
       <Footer />
+      <AccessibilityControls />
     </>
   );
 }
