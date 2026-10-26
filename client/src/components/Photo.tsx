@@ -12,5 +12,5 @@ export default function Photo({ src, alt, hint }: Props) {
   if (missing) {
     return <div className="photo placeholder" role="img" aria-label={alt}><span>Photo goes here<br /><small>{hint}</small></span></div>;
   }
-  return <img className="photo" src={src} alt={alt} loading="lazy" onError={() => setMissing(true)} />;
+  return <img className="photo" src={src} alt={alt} loading="lazy" decoding="async" onError={() => setMissing(true)} />;
 }

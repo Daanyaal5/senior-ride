@@ -1,29 +1,27 @@
-# Senior Ride
+# Halifax Accessible, Mobility, and Airport Transfers
 
-Ride booking for seniors: scheduled or ASAP rides, Extra Care option, family contact, preferred driver language, Google Maps address search and a server-calculated fare estimate. You assign drivers yourself from the bookings list.
+A simple booking website: customers pick addresses (Google autocomplete, with a one-tap airport button), choose a time, see a fixed price (tax included), and pay by card (Square) or Interac e-Transfer. Each booking is emailed to the business and the customer. No database and no paid messaging service.
 
 ## Setup
-1. Create a Postgres database and run `server/src/db/schema.sql`.
-2. `cd server && cp .env.example .env` (fill in values) then `npm install && npm run dev`.
-3. `cd client && cp .env.example .env` (add your Google key) then `npm install && npm run dev`.
-4. Add a looping muted video at `client/public/hero.mp4`.
-5. Open http://localhost:5173
+1. `cd server && cp .env.example .env` (fill in values) then `npm install && npm run dev`.
+2. `cd client && cp .env.example .env` (fill in values) then `npm install && npm run dev`.
+3. Open http://localhost:5173
 
-## Google APIs to enable
-Maps JavaScript API, Places API, Routes API. Use one browser key (client, restricted by website) and one server key (Routes API, restricted by IP).
+## Where to change things
+- Prices, areas and the Extra Care rate: `server/src/config/pricing.ts`
+- Business name, phone, WhatsApp, emails: `client/src/utils/brand.ts` and the business lines in `server/.env`
+- Booking policy wording: `client/src/pages/Terms.tsx`
 
-## See your bookings
-`GET /api/bookings` with header `x-admin-key: <ADMIN_KEY from server/.env>`.
+## Emails (free)
+- Testing: install Mailpit (`brew install mailpit`, then run `mailpit`) and read emails at http://localhost:8025.
+- Real emails: use a Gmail account with an app password (`SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`).
+- Test your settings: `cd server && npm run test:email -- you@example.com`.
 
-## Tune prices
-Edit `server/src/config/pricing.ts`.
+## Square payments
+1. Create an application in the Square Developer Dashboard.
+2. Sandbox Access token and Location ID go in `server/.env`. Sandbox Application ID and Location ID go in `client/.env`.
+3. To go live, switch both files to your production values and set the environment to `production`.
+Card payments, saved cards and refunds are all managed in the Square Dashboard.
 
-## Stripe payments
-1. In server/.env set `STRIPE_SECRET_KEY` (Stripe Dashboard > Developers > API keys, test mode).
-2. Existing database: run `server/src/migrations/002_payment_status.sql` once.
-3. Local webhook: install the Stripe CLI, run `stripe listen --forward-to localhost:3001/api/payments/webhook`, and put the `whsec_...` it prints in `STRIPE_WEBHOOK_SECRET`.
-4. Test card: 4242 4242 4242 4242, any future date, any CVC.
-5. Live: add a webhook endpoint in the Stripe Dashboard for `checkout.session.completed` pointing at `https://YOUR-API/api/payments/webhook`.
-
-## Phone verification (text-message code)
-Uses Twilio Verify: create a Verify Service in the Twilio console and set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_VERIFY_SID`. Set `VERIFY_SECRET` to any long random string. With `MOCK_MODE=true` no text is sent and the code is always 123456.
+## Google
+Enable Maps JavaScript API and Places API, with one browser key restricted to your website.

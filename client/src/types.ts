@@ -1,9 +1,14 @@
 // Shared shapes used across the client.
 export interface Place { address: string; lat: number; lng: number; }
 
+/** The price, worked out by the server. All amounts include tax. */
 export interface FareBreakdown {
-  baseFare: number; distanceFare: number; timeFare: number;
-  extraCareFee: number; asapFee: number; total: number;
+  route: string;          // e.g. "Halifax to Halifax Airport"
+  tripFare: number;
+  extraCareHours: number;
+  extraCareFee: number;
+  urgentFee: number;      // 0 unless "Urgent ride" is ticked
+  total: number;
 }
 
-export interface Estimate { distanceKm: number; durationMin: number; fare: FareBreakdown; }
+export type PaymentMethod = "card" | "applepay" | "etransfer" | "cash";
