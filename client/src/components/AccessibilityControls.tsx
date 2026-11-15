@@ -18,6 +18,7 @@ export default function AccessibilityControls() {
   // Apply the choices to the whole page whenever they change.
   useEffect(() => {
     document.documentElement.style.fontSize = `${LEVELS[level]}%`;
+    document.documentElement.dataset.textLevel = String(level); // lets the CSS adjust tight layouts at big sizes
     document.documentElement.dataset.contrast = contrast ? "high" : "normal";
     localStorage.setItem("textLevel", String(level));
     localStorage.setItem("contrast", contrast ? "on" : "off");
@@ -31,7 +32,7 @@ export default function AccessibilityControls() {
           <button type="button" onClick={() => setLevel(0)} aria-label="Reset text size">A</button>
           <button type="button" disabled={level === LEVELS.length - 1} onClick={() => setLevel(level + 1)} aria-label="Larger text">A+</button>
           <span className="a11y-size" aria-live="polite">Text {LEVELS[level]}%</span>
-          <button type="button" aria-pressed={contrast} onClick={() => setContrast(!contrast)}>High contrast</button>
+          <button type="button" aria-pressed={contrast} onClick={() => setContrast(!contrast)}>High Contrast</button>
         </div>
       )}
       <button type="button" className="a11y-toggle" aria-expanded={open} aria-label="Display settings: text size and contrast" onClick={() => setOpen(!open)}>Aa</button>

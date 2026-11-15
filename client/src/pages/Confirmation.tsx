@@ -1,9 +1,11 @@
 import { Link, useSearchParams } from "react-router-dom";
 import ContactOptions from "../components/ContactOptions";
 import { ETRANSFER_EMAIL } from "../utils/brand";
+import { useFees } from "../hooks/useFees";
 
 /** Shown after booking. The summary was saved in the browser by the booking page. */
 export default function Confirmation() {
+  const fees = useFees(); // from server/data/fees.csv
   const ref = useSearchParams()[0].get("ref");
   const saved = JSON.parse(sessionStorage.getItem("lastBooking") ?? "null");
   const s = saved && saved.reference === ref ? saved : null; // only trust it if it matches this booking
@@ -40,13 +42,13 @@ export default function Confirmation() {
       <dl className="summary">
         <div><dt>When</dt><dd>{when}</dd></div>
         <div><dt>Pickup</dt><dd>{s.pickup.address}</dd></div>
-        <div><dt>Drop-off</dt><dd>{s.dropoff.address}</dd></div>
-        <div><dt>Total (tax included)</dt><dd>{total}</dd></div>
+        <div><dt>Drop-Off</dt><dd>{s.dropoff.address}</dd></div>
+        <div><dt>Total (Tax Included)</dt><dd>{total}</dd></div>
       </dl>
-      <p className="warning">Waiting time: $20 for every 30 minutes the driver waits.</p>
+      <p className="warning">Waiting time: ${fees.waitPer30} for every 30 minutes the driver waits.</p>
       <p>We have emailed you these details. Questions or changes? Contact us any time.</p>
       <ContactOptions />
-      <Link className="button" to="/">Back to home</Link>
+      <Link className="button" to="/">Back to Home</Link>
     </main>
   );
 }

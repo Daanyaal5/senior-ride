@@ -1,3 +1,4 @@
+import { ASSISTANCE_NAME } from "../utils/brand";
 /** Who We Are page: the people and values. Replace the placeholder text with your own. */
 export default function WhoWeAre() {
   return (
@@ -76,7 +77,7 @@ export default function WhoWeAre() {
           of helping passengers feel comfortable throughout their trip.
         </li>
         <li>
-          <strong>Personalized Care:</strong> Our Extra Care option
+          <strong>Personalized Care:</strong> Our {ASSISTANCE_NAME} option
           is designed for passengers who need additional assistance,
           including help getting into and out of the vehicle, where
           this service is available.

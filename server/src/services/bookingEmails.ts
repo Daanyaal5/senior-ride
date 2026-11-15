@@ -1,6 +1,7 @@
 import { FareBreakdown, Place } from "./fare.js";
 import { sendEmail } from "./email.js";
-import { WAIT_FEE_PER_30_MIN } from "../config/pricing.js";
+import { ASSISTANCE_NAME } from "../config/pricing.js";
+import { getPriceData } from "../config/priceData.js";
 
 export interface Booking {
   reference: string;
@@ -40,7 +41,7 @@ function detailsTable(b: Booking): string {
     ["Email", b.email],
     ["Flight number", b.flightNumber || "None"],
     ["Urgent ride", b.fare.urgentFee ? "YES" : "No"],
-    ["Extra Care", b.fare.extraCareHours ? `${b.fare.extraCareHours} hour(s)` : "No"],
+    [ASSISTANCE_NAME, b.fare.extraCareHours ? `${b.fare.extraCareHours} hour(s)` : "No"],
     ["Driver language", b.language],
     ["Notes", b.notes || "None"],
     ["Total (tax included)", money(b.fare.total)],
@@ -51,14 +52,18 @@ function detailsTable(b: Booking): string {
     .join("")}</table>`;
 }
 
-/** Tells the business about a new booking. Replying goes straight to the customer. */
+/**
+ * Tells the business about a new booking, with every detail.
+ * Goes to BUSINESS_EMAIL, with a copy (CC) to BUSINESS_EMAIL_CC. Replying goes straight to the customer.
+ */
 export function emailBusiness(b: Booking) {
   const status = (b.fare.urgentFee ? "URGENT, " : "") + STATUS[b.payment];
   return sendEmail(
     process.env.BUSINESS_EMAIL as string,
     `New booking ${b.reference} (${status}): ${b.when}`,
     `<h2>New booking: ${status}</h2>${detailsTable(b)}`,
-    b.email
+    b.email,
+    process.env.BUSINESS_EMAIL_CC
   );
 }
 
@@ -70,7 +75,7 @@ export function emailCustomer(b: Booking) {
     <p>Your ride is confirmed once we receive your payment.</p>`;
   const paid = `<p>Your payment of <b>${money(b.fare.total)}</b> was received. Your ride is booked.</p>`;
   const cash = `<p>Please pay <b>${money(b.fare.total)}</b> in cash to the driver when you reach your destination. We will call you to confirm your ride.</p>`;
-  const waiting = `<p style="color:#b00020"><b>Waiting time: $${WAIT_FEE_PER_30_MIN} for every 30 minutes the driver waits.</b></p>`;
+  const waiting = `<p style="color:#b00020"><b>Waiting time: $${getPriceData().fees.waitingPer30Min} for every 30 minutes the driver waits.</b></p>`;
   return sendEmail(
     b.email,
     `Your booking ${b.reference}`,
