@@ -40,4 +40,4 @@ export const submitBooking = (b: BookingRequest) =>
 
 /** The price list for the home page. */
 export const getPrices = () =>
-  request<{ prices: { route: string; price: number }[]; extraCarePerHour: number; urgentFee: number; waitFeePer30: number }>("/api/bookings/prices");
+  request<{ prices: { route: string; price: number }[]; extraCarePerHour: number; maxHours: number; urgentFee: number; waitFeePer30: number }>("/api/bookings/prices");

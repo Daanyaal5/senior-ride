@@ -15,10 +15,14 @@ const transport = () =>
 
 const FROM = () => `"${process.env.BUSINESS_NAME ?? "Halifax Accessible, Mobility, and Airport Transfers"}" <${process.env.SMTP_USER || "bookings@example.test"}>`;
 
-/** Sends one email. replyTo lets the business reply straight to the customer. */
-export async function sendEmail(to: string, subject: string, html: string, replyTo?: string): Promise<void> {
+/**
+ * Sends one email.
+ * replyTo lets the business reply straight to the customer.
+ * cc sends a copy to another address (left out if empty).
+ */
+export async function sendEmail(to: string, subject: string, html: string, replyTo?: string, cc?: string): Promise<void> {
   try {
-    await transport().sendMail({ from: FROM(), to, subject, html, replyTo });
+    await transport().sendMail({ from: FROM(), to, cc: cc || undefined, subject, html, replyTo });
   } catch (e) {
     throw new Error(`Email could not be sent (${(e as Error).message}). Check SMTP settings in server/.env.`);
   }

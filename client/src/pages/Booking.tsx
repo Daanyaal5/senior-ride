@@ -10,21 +10,18 @@ import { ApiError, getEstimate, submitBooking } from "../api/bookings";
 import { FareBreakdown, PaymentMethod, Place } from "../types";
 import { LANGUAGES } from "../utils/languages";
 import { AIRPORT_PLACE } from "../utils/serviceArea";
-import { ETRANSFER_EMAIL } from "../utils/brand";
+import { ASSISTANCE_NAME, ETRANSFER_EMAIL } from "../utils/brand";
+import { useFees } from "../hooks/useFees";
 import { useApplePay } from "../hooks/useApplePay";
 
 const DRAFT_KEY = "bookingDraft";
-const EXTRA_CARE_RATE = 25; // per hour, tax included. Display only: the server sets the real price.
-const URGENT_FEE = 99;      // display only, like the line above
-const WAIT_FEE = 20;        // per 30 minutes of waiting, display only
-const HOUR_CHOICES = [1, 2, 3, 4, 5, 6, 7, 8];
 
 /** The words on the main button for each way of paying. */
 const SUBMIT_LABEL: Record<PaymentMethod, (total: number) => string> = {
-  card: (t) => `Pay $${t.toFixed(2)} and book`,
+  card: (t) => `Pay $${t.toFixed(2)} and Book`,
   applepay: (t) => `Pay $${t.toFixed(2)} with Apple Pay`,
-  etransfer: () => "Book now, pay by e-Transfer",
-  cash: () => "Book now, pay cash to the driver",
+  etransfer: () => "Book Now, Pay by e‑Transfer", // ‑ keeps "e-Transfer" on one line
+  cash: () => "Book Now, Pay Cash to the Driver",
 };
 
 /** Reads the answers saved in this browser tab, so a refresh or Back does not lose anything. */
@@ -35,6 +32,7 @@ function loadDraft(): any {
 /** One short booking form: where, when, price, your details, payment, policy. */
 export default function Booking() {
   const navigate = useNavigate();
+  const fees = useFees(); // from server/data/fees.csv
   const [draft] = useState<any>(loadDraft);
   const cardForm = useRef<CardFormHandle>(null);
 
@@ -73,7 +71,7 @@ export default function Booking() {
     sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ pickup, dropoff, when, urgent, flightNumber, name, phone, email, familyPhone, language, extraCare, extraCareHours, notes, payment }));
   }, [pickup, dropoff, when, urgent, flightNumber, name, phone, email, familyPhone, language, extraCare, extraCareHours, notes, payment]);
 
-  // Ask the server for the price whenever the trip or Extra Care changes.
+  // Ask the server for the price whenever the trip, Personal Assistance or "urgent" changes.
   useEffect(() => {
     setFare(null); setContactUs(""); setError("");
     if (!pickup || !dropoff) return;
@@ -116,17 +114,17 @@ export default function Booking() {
 
   return (
     <main className="page">
-      <h1>Book your ride</h1>
+      <h1>Book Your Ride</h1>
       <p className="lead">All rides are booked in advance.</p>
       <form onSubmit={handleSubmit}>
         <fieldset>
-          <legend><span className="step-num">1</span> Where are you going?</legend>
-          <PlacesInput id="pickup" label="Pickup address" initialValue={pickup?.address} onSelect={setPickup}
-            quickPick={{ label: "✈ Pick up at the airport", place: AIRPORT_PLACE }} />
-          <PlacesInput id="dropoff" label="Drop-off address" initialValue={dropoff?.address} onSelect={setDropoff}
-            quickPick={{ label: "✈ Drop off at the airport", place: AIRPORT_PLACE }} />
+          <legend><span className="step-num">1</span> Where Are You Going?</legend>
+          <PlacesInput id="pickup" label="Pickup Address" initialValue={pickup?.address} onSelect={setPickup}
+            quickPick={{ label: "✈ Pick Up at the Airport", place: AIRPORT_PLACE }} />
+          <PlacesInput id="dropoff" label="Drop-Off Address" initialValue={dropoff?.address} onSelect={setDropoff}
+            quickPick={{ label: "✈ Drop Off at the Airport", place: AIRPORT_PLACE }} />
           {isAirportTrip && (
-            <div className="field"><label htmlFor="flight">Flight number <span className="optional">(optional)</span></label>
+            <div className="field"><label htmlFor="flight">Flight Number <span className="optional">(optional)</span></label>
               <p className="hint" id="flight-hint">Helps us track your flight if it is early or late.</p>
               <input id="flight" type="text" aria-describedby="flight-hint" value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} placeholder="e.g. AC 612" /></div>
           )}
@@ -136,54 +134,54 @@ export default function Booking() {
           <legend><span className="step-num">2</span> When?</legend>
           <DateTimeWheel initial={when} onChange={setWhen} />
           <label className="choice"><input type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} />
-            <span><strong>Urgent ride fee: ${URGENT_FEE}</strong>. For today or short notice. We confirm by phone that a driver is available.</span></label>
+            <span><strong>Urgent Ride Fee: ${fees.urgent}</strong>. For today or short notice. We confirm by phone that a driver is available.</span></label>
         </fieldset>
 
         {fare && <FareEstimate fare={fare} />}
-        {fare && <p className="warning">Waiting time: ${WAIT_FEE} for every 30 minutes the driver waits.</p>}
+        {fare && <p className="warning">Waiting time: ${fees.waitPer30} for every 30 minutes the driver waits.</p>}
         {contactUs && <ContactOptions message={contactUs} />}
 
         {/* The rest only appears once the trip has an online price. */}
         {fare && (
           <div className="reveal">
             <fieldset>
-              <legend><span className="step-num">3</span> About the passenger</legend>
-              <div className="field"><label htmlFor="name">Full name</label>
+              <legend><span className="step-num">3</span> About the Passenger</legend>
+              <div className="field"><label htmlFor="name">Full Name</label>
                 <input id="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} /></div>
-              <div className="field"><label htmlFor="phone">Phone number</label>
+              <div className="field"><label htmlFor="phone">Phone Number</label>
                 <input id="phone" type="tel" required autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
               <div className="field"><label htmlFor="email">Email</label>
                 <p className="hint" id="email-hint">Your booking confirmation is sent here.</p>
                 <input id="email" type="email" required autoComplete="email" aria-describedby="email-hint" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-              <div className="field"><label htmlFor="family">Family contact phone <span className="optional">(optional)</span></label>
+              <div className="field"><label htmlFor="family">Family Contact Phone <span className="optional">(optional)</span></label>
                 <p className="hint" id="family-hint">We call this person if we cannot reach you.</p>
                 <input id="family" type="tel" aria-describedby="family-hint" value={familyPhone} onChange={(e) => setFamilyPhone(e.target.value)} />
                 {familyPhone && samePhone(phone, familyPhone) && <p className="error" role="alert">This must be a different number from your own.</p>}</div>
-              <div className="field"><label htmlFor="lang">Preferred driver language</label>
+              <div className="field"><label htmlFor="lang">Preferred Driver Language</label>
                 <select id="lang" value={language} onChange={(e) => setLanguage(e.target.value)}>
                   {LANGUAGES.map((l) => <option key={l}>{l}</option>)}
                 </select></div>
               <label className="choice"><input type="checkbox" checked={extraCare} onChange={(e) => setExtraCare(e.target.checked)} />
-                <span>Extra Care: the driver helps you in and out and stays with you as needed. ${EXTRA_CARE_RATE} per hour, tax included.</span></label>
+                <span><strong>{ASSISTANCE_NAME}</strong>: the driver helps you in and out and stays with you as needed. ${fees.assistancePerHour} per hour, tax included.</span></label>
               {extraCare && (
-                <div className="field"><label htmlFor="hours">How many hours of help?</label>
+                <div className="field"><label htmlFor="hours">How Many Hours of Help?</label>
                   <select id="hours" value={extraCareHours} onChange={(e) => setExtraCareHours(Number(e.target.value))}>
-                    {HOUR_CHOICES.map((h) => <option key={h} value={h}>{h} {h === 1 ? "hour" : "hours"} (${h * EXTRA_CARE_RATE})</option>)}
+                    {Array.from({ length: fees.maxHours }, (_, i) => i + 1).map((h) => <option key={h} value={h}>{h} {h === 1 ? "hour" : "hours"} (${h * fees.assistancePerHour})</option>)}
                   </select></div>
               )}
-              <div className="field"><label htmlFor="notes">Anything we should know? <span className="optional">(optional)</span></label>
+              <div className="field"><label htmlFor="notes">Anything We Should Know? <span className="optional">(optional)</span></label>
                 <textarea id="notes" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. buzzer number, walker, extra luggage" /></div>
             </fieldset>
 
             <fieldset>
-              <legend><span className="step-num">4</span> How would you like to pay?</legend>
+              <legend><span className="step-num">4</span> How Would You Like to Pay?</legend>
               <div className="choices">
-                <button type="button" className="choice-btn" aria-pressed={method === "card"} onClick={() => setPayment("card")}>Credit or debit card</button>
+                <button type="button" className="choice-btn" aria-pressed={method === "card"} onClick={() => setPayment("card")}>Credit or Debit Card</button>
                 {applePay.available && (
                   <button type="button" className="choice-btn" aria-pressed={method === "applepay"} onClick={() => setPayment("applepay")}>Apple Pay</button>
                 )}
-                <button type="button" className="choice-btn" aria-pressed={method === "etransfer"} onClick={() => setPayment("etransfer")}>Interac e-Transfer</button>
-                <button type="button" className="choice-btn" aria-pressed={method === "cash"} onClick={() => setPayment("cash")}>Cash to the driver</button>
+                <button type="button" className="choice-btn" aria-pressed={method === "etransfer"} onClick={() => setPayment("etransfer")}>Interac e‑Transfer</button>
+                <button type="button" className="choice-btn" aria-pressed={method === "cash"} onClick={() => setPayment("cash")}>Cash to the Driver</button>
               </div>
               {method === "card" && <CardForm ref={cardForm} />}
               {method === "applepay" && <p className="etransfer-note">Tap the Apple Pay button below to pay <strong>${fare.total.toFixed(2)}</strong>.</p>}
@@ -195,17 +193,12 @@ export default function Booking() {
               )}
             </fieldset>
 
-            <div className="policy-box">
-              <h2>Booking policy</h2>
-              <ul>
-                <li>All rides are booked in advance. Card, Apple Pay and e-Transfer rides are confirmed once paid. Cash rides are confirmed by phone.</li>
-                <li>We may cancel a ride at any time, even after payment. If we do, you get a 100% refund within 5 business days.</li>
-                <li className="warning">Waiting time: ${WAIT_FEE} for every 30 minutes the driver waits.</li>
-              </ul>
-              <Link to="/terms" target="_blank" rel="noopener noreferrer">Read the full policy<span className="sr-only"> (opens in a new tab)</span></Link>
+            {/* The policy opens in a new tab, so the filled-in form stays open here. */}
+            <div className="agree">
+              <label className="choice"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
+                <span><strong>I have read and accept the booking policy.</strong></span></label>
+              <Link className="policy-link" to="/terms" target="_blank" rel="noopener noreferrer">Read the Booking Policy<span className="sr-only"> (opens in a new tab)</span></Link>
             </div>
-            <label className="choice"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
-              <span><strong>I have read and accept the booking policy.</strong></span></label>
 
             {error && <p className="error" role="alert">{error}</p>}
             {method === "applepay" ? (

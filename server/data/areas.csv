@@ -1,0 +1,11 @@
+# AREAS WE SERVE. One area per line.
+# postal_codes: first 3 characters of the postal code, separated by spaces. Used first, because it is the most reliable.
+# place_names: words in the address, separated by |. Used when the postal code is missing or not listed.
+# "Halifax Airport" is special: any address within 3 km of the terminal counts as the airport. Keep that name as it is.
+area,postal_codes,place_names
+Halifax Airport,,stanfield|halifax airport|halifax international airport
+Halifax,B3H B3J B3K B3L B3M B3N B3P B3R B3S,halifax
+Dartmouth,B2V B2W B2X B2Y B3A B3B,dartmouth
+Sackville,B4C B4E B4G,sackville
+Bedford,B4A B4B,bedford
+Hammonds Plains,B4B,hammonds plains

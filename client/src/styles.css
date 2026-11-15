@@ -35,7 +35,7 @@ p, li { max-width: 62ch; }
 
 /* Home */
 .hero { position: relative; min-height: 70vh; display: flex; align-items: center; color: #fff; overflow: hidden; background: #0b2a33; }
-.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-text { position: relative; padding: 2rem 1.5rem; max-width: 46rem; }
 .hero-text .button { background: #f2a900; color: #12263a; }
 .features { padding: 2rem 1.5rem; max-width: 60rem; margin: 0 auto; }
@@ -116,11 +116,7 @@ input:focus, select:focus { border-color: var(--brand); background: #fff; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } .button { transition: none; } }
 
-/* Hero: blue gradient with a faint gold saltire (X) as a nod to the Halifax flag */
-.hero { background:
-  linear-gradient(45deg, transparent 48.5%, rgba(250, 163, 44, .22) 49% 51%, transparent 51.5%),
-  linear-gradient(-45deg, transparent 48.5%, rgba(250, 163, 44, .22) 49% 51%, transparent 51.5%),
-  linear-gradient(135deg, var(--brand-dark), var(--brand)); }
+/* Hero: the video plays as it is. Only the text box gets a see-through dark backing, so the words stay readable. */
 .hero h1 { color: #fff; }
 .hero-text .button { margin-right: .75rem; margin-bottom: .75rem; }
 
@@ -221,3 +217,410 @@ p.warning { background: #fff1f2; border-left: 6px solid var(--warn); border-radi
   appearance: auto; /* standard property first, so editors don't warn */
   -webkit-appearance: -apple-pay-button; -apple-pay-button-type: pay; -apple-pay-button-style: black; /* Apple's own Pay button (Safari only) */
 }
+
+/* ================================================================
+   LAYOUT REFRESH: compact spacing, form titles inside their boxes,
+   plain hero video, phone menu. Rules here override earlier ones.
+   ================================================================ */
+
+/* --- Compact spacing between sections --- */
+.section { padding: 2rem 1.5rem; }
+.section h2 { margin: 0 0 .75rem; }
+.split { gap: 1.5rem; }
+.cards { gap: 1rem; }
+.card { padding: 1.25rem; }
+.card h3 { margin-bottom: .5rem; }
+.card p { margin: 0; }
+.cards h3 { margin: .5rem 0 .25rem; }
+.contact-box, .policy-box { margin: 1rem 0; }
+.footer { margin-top: 1.5rem; }
+.footer-grid { padding: 2rem 1.5rem; gap: 1.5rem; }
+.page { padding: 1.25rem 1.5rem; }
+.page h1 { margin: .5rem 0; }
+.lead { margin: 0 0 1rem; }
+@media (max-width: 600px) {
+  .section { padding: 1.5rem 1rem; }
+  .page { padding: 1rem; }
+  .footer-grid { padding: 1.5rem 1rem; }
+}
+
+/* --- Form sections: the title sits inside the box instead of on its border, so it never overlaps --- */
+fieldset { margin: 0 0 1rem; padding: 1.25rem; }
+legend {
+  float: left; width: 100%; padding: 0; margin: 0 0 .25rem;
+  display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; line-height: 1.3;
+}
+legend ~ * { clear: both; }
+legend .step-num { flex: none; margin: 0; }
+.field { margin-top: .9rem; }
+.field label { margin-bottom: .25rem; }
+.hint { margin: 0 0 .4rem; line-height: 1.4; }
+.choice { line-height: 1.45; }
+.choice input { margin-top: .1rem; }
+.fare, p.warning { margin: 0 0 1rem; }
+.fare dt { padding-right: .5rem; }
+.choice-btn { line-height: 1.25; padding: .5rem .75rem; }
+@media (max-width: 600px) { fieldset { padding: 1rem; } }
+
+/* "I accept" line and the policy link under it */
+.agree { margin: .5rem 0 0; }
+.agree .choice { margin-bottom: .25rem; }
+.policy-link { display: inline-block; margin-left: calc(28px + .75rem); font-weight: 700; color: var(--brand); }
+
+/* --- Hero: plain video with a readable text box --- */
+.hero { min-height: 60vh; background: #10202f; }
+.hero-text {
+  margin: 1.5rem; padding: 1.5rem 1.75rem; max-width: 40rem;
+  background: rgba(0, 0, 0, .45); border-radius: var(--radius);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
+}
+.hero-text h1 { margin: .25rem 0 .75rem; }
+.hero-text p { margin: 0 0 1rem; }
+.hero-text .button { text-shadow: none; }
+@media (max-width: 600px) {
+  .hero { min-height: 55vh; }
+  .hero-text { margin: 1rem; padding: 1.1rem 1.25rem; }
+  .hero-text h1 { font-size: 1.6rem; }
+}
+
+/* --- Header: logo + name; links on wide screens, a menu button on phones --- */
+.header { padding: .6rem 1.5rem; gap: .75rem 1.25rem; }
+.brand { flex-direction: row; align-items: center; gap: .6rem; max-width: 24rem; }
+.brand-logo { width: 44px; height: 44px; border-radius: 50%; flex: none; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.menu-toggle { display: none; }
+
+@media (max-width: 900px) {
+  .nav-desktop, .call-desktop { display: none; }
+  .header { flex-wrap: nowrap; padding: .5rem 1rem; }
+  .brand-name { font-size: 1rem; }
+  .brand-tagline { font-size: .8rem; }
+  .brand-logo { width: 38px; height: 38px; }
+  .menu-toggle {
+    display: grid; place-items: center; flex: none; margin-left: auto;
+    width: 48px; height: 48px; border: 2px solid var(--line); border-radius: 12px;
+    background: #fff; color: var(--brand-dark); font-size: 1.6rem; line-height: 1; cursor: pointer;
+  }
+}
+
+/* Full-screen see-through menu on phones */
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 50; overflow-y: auto;
+  background: rgba(0, 33, 71, .88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: flex; flex-direction: column; align-items: stretch; gap: .5rem;
+  padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem 2rem;
+  animation: menu-in .2s ease;
+}
+@keyframes menu-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .mobile-menu { animation: none; } }
+.menu-close {
+  align-self: flex-end; width: 48px; height: 48px; border: 2px solid rgba(255, 255, 255, .5); border-radius: 12px;
+  background: transparent; color: #fff; font-size: 1.4rem; cursor: pointer;
+}
+.mobile-nav { display: flex; flex-direction: column; margin-top: .5rem; }
+.mobile-nav a {
+  color: #fff; font-size: 1.35rem; font-weight: 700; text-decoration: none;
+  padding: .9rem .25rem; border-bottom: 1px solid rgba(255, 255, 255, .2);
+}
+.mobile-nav a.active { color: var(--accent); }
+.mobile-nav .nav-book {
+  margin-top: 1rem; text-align: center; border: 0; border-radius: 999px;
+  background: var(--accent); color: var(--brand-dark); padding: .9rem;
+}
+.mobile-call {
+  display: block; text-align: center; margin-top: .5rem; padding: .8rem; border-radius: 999px;
+  border: 2px solid #fff; color: #fff; font-weight: 700; text-decoration: none;
+}
+
+/* Hero on phones: text box at the bottom so the video shows above it; smaller text; buttons side by side */
+.hero-tagline { text-shadow: none; }
+.hero-buttons { display: flex; flex-wrap: wrap; gap: .6rem; }
+.hero-text .hero-buttons .button { margin: 0; }
+@media (max-width: 600px) {
+  .hero { min-height: 72vh; align-items: flex-end; }
+  .hero-text { margin: .75rem; padding: 1rem 1.1rem; }
+  .hero-text h1 { font-size: 1.4rem; margin: .25rem 0 .5rem; }
+  .hero-text p { font-size: 1rem; margin-bottom: .75rem; }
+  .hero-tagline { font-size: .9rem; padding: .2rem .7rem; margin-bottom: .4rem; }
+  .hero-text .button { font-size: 1.05rem; padding: .7rem 1.2rem; min-height: 48px; }
+}
+
+/* Price list: the trip column takes the space; prices stay on one line */
+.price-table td:first-child { width: 100%; }
+.price-table th:last-child, .price-table td:last-child { white-space: nowrap; text-align: right; }
+@media (max-width: 600px) {
+  .price-table { font-size: 1rem; }
+  .price-table th, .price-table td { padding: .6rem .75rem; }
+}
+
+/* Header logo image (client/public/images/logo.webp). Height sets the size; width follows. */
+.brand-logo-full { display: block; height: 64px; width: auto; }
+@media (max-width: 900px) { .brand-logo-full { height: 46px; } }
+@media (max-width: 360px) { .brand-logo-full { height: 40px; } }
+
+/* --- Hero, cleaner look: no box; a dark fade on the left (bottom on phones) keeps the text readable --- */
+.hero { min-height: 68vh; align-items: center; }
+.hero-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  /* Dark on the left where the text sits, clear on the right so the video shows. */
+  background: linear-gradient(90deg, rgba(5, 15, 25, .85) 0%, rgba(5, 15, 25, .6) 40%, rgba(5, 15, 25, 0) 75%);
+}
+.hero-text {
+  margin: 0; padding: 3rem 1.5rem 3rem clamp(1.5rem, 6vw, 5rem); max-width: 40rem;
+  background: none; border-radius: 0; backdrop-filter: none; -webkit-backdrop-filter: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+}
+.hero-text h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; margin: .4rem 0 .8rem; letter-spacing: -.01em; }
+.hero-lead { font-size: 1.2rem; margin: 0 0 1rem; max-width: 34rem; }
+/* Three short selling points, each with a gold tick */
+.hero-points { list-style: none; padding: 0; margin: 0 0 1.5rem; display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; font-weight: 600; }
+.hero-points li::before { content: "✓"; color: var(--accent); font-weight: 800; margin-right: .4rem; }
+.hero-text .button.ghost { background: rgba(255, 255, 255, .12); border: 2px solid #fff; color: #fff; }
+
+@media (max-width: 600px) {
+  .hero { min-height: 78vh; align-items: flex-end; }
+  /* On phones the fade goes bottom-to-top, so the top of the video stays clear. */
+  .hero-shade { background: linear-gradient(0deg, rgba(5, 15, 25, .92) 0%, rgba(5, 15, 25, .75) 45%, rgba(5, 15, 25, 0) 80%); }
+  .hero-text { margin: 0; padding: 1.25rem 1rem 1.5rem; }
+  .hero-text h1 { font-size: 1.75rem; }
+  .hero-lead { font-size: 1.05rem; margin-bottom: .75rem; }
+  .hero-points { flex-direction: column; margin-bottom: 1.1rem; font-size: 1rem; }
+}
+
+/* --- High contrast on dark backgrounds ---
+   High contrast turns headings black (good on white), but the video, the blue price band and the footer
+   are dark, so their headings must stay white. The video fade also gets darker for stronger contrast. */
+:root[data-contrast="high"] .hero h1,
+:root[data-contrast="high"] .hero h2,
+:root[data-contrast="high"] .band h2,
+:root[data-contrast="high"] .footer h2 { color: #fff; }
+:root[data-contrast="high"] .hero-text { color: #fff; text-shadow: none; }
+:root[data-contrast="high"] .hero-shade { background: rgba(0, 0, 0, .78); }
+
+/* --- Hero on phones: text sits higher, bigger yellow tagline, smaller line under the heading --- */
+@media (max-width: 600px) {
+  .hero { align-items: center; }                                            /* text in the middle of the video, not at the bottom */
+  .hero-text { padding: 2rem 1rem; }
+  /* Fade covers where the text now sits; only the very top of the video stays clear */
+  .hero-shade { background: linear-gradient(0deg, rgba(5, 15, 25, .85) 0%, rgba(5, 15, 25, .72) 70%, rgba(5, 15, 25, .2) 100%); }
+  .hero-text .hero-tagline { font-size: 1.05rem; padding: .35rem 1rem; margin-bottom: .6rem; }
+  .hero-text .hero-lead { font-size: .86rem; line-height: 1.45; }
+}
+
+/* --- Never wider than the screen, even with the biggest text size ---
+   Grids: each column's minimum width is capped at the screen width (min(..., 100%)),
+   so enlarged text can't push a column past the edge. */
+.split { grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr)); }
+.cards { grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); }
+.footer-grid { grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr)); }
+.contact-buttons { grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr)); }
+fieldset { min-width: 0; }                 /* form boxes may shrink to the screen instead of growing to fit their content */
+.wheel-label { overflow: hidden; text-overflow: clip; }
+.photo, img, video { max-width: 100%; }
+/* Last safety net: if anything is still too wide, cut it off instead of letting the page slide sideways */
+html, body { overflow-x: hidden; }                                  /* older iPhones (before iOS 16) */
+@supports (overflow-x: clip) { html, body { overflow-x: clip; } }   /* newer browsers: same effect, and the desktop header still sticks */
+
+/* Big text (the two largest "Aa" sizes): the Day wheel gets its own row, the other three sit below it */
+:root[data-text-level="2"] .wheels, :root[data-text-level="3"] .wheels { flex-wrap: wrap; row-gap: .75rem; }
+:root[data-text-level="2"] .wheels .wheel-wrap:first-child,
+:root[data-text-level="3"] .wheels .wheel-wrap:first-child { flex: 1 1 100%; }
+
+/* Stop the sideways "rubber-band" bounce when someone swipes left or right (trackpad or phone).
+   Nothing is too wide; this only turns off the browser's elastic stretch. */
+html, body { overscroll-behavior-x: none; }
+
+/* The line under the hero heading stays on one line on phones: the text shrinks with the screen width */
+/* The line listing every area: one line on computers; two short lines on phones (too long for one at a readable size) */
+.hero-text { max-width: 52rem; }
+.hero-text .hero-lead { max-width: none; font-size: 1.05rem; }
+@media (max-width: 600px) {
+  .hero-text { width: 100%; min-width: 0; padding-left: 16px; padding-right: 16px; } /* never wider than the screen; side gaps stay 16px at every text size */
+  .hero-text .hero-lead { white-space: nowrap; font-size: min(1rem, 3.05vw); line-height: 1.45; }
+}
+
+/* Full sentence on computers, short list on phones */
+.lead-short { display: none; }
+@media (max-width: 600px) { .lead-full { display: none; } .lead-short { display: inline; } }
+@media (max-width: 370px) { .hero-text .hero-lead { font-size: 2.9vw; } } /* very small phones need a touch smaller to fit */
+
+/* Hero ticks: two per row on laptops and bigger screens (2 x 2), one per row on phones */
+.hero-points { display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: .45rem 2rem; } /* columns may shrink and wrap, never past the screen */
+@media (max-width: 600px) { .hero-points { grid-template-columns: 1fr; } }
+.hero-points li { padding-left: 1.35em; text-indent: -1.35em; } /* a wrapped line lines up with the words, not the tick */
+
+/* Subheading under a section title, e.g. "We Are Pre-Arranged Transportation" */
+.subheading {
+  margin: -.25rem 0 .9rem; color: var(--brand); font-weight: 800; font-size: 1.05rem;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+:root[data-contrast="high"] .subheading { color: #000; }
+/* "What We Offer": narrower minimum so all five cards fit in one row on computers */
+.offer-cards { grid-template-columns: repeat(auto-fit, minmax(min(11.5rem, 100%), 1fr)); }
+
+/* --- Contact icons in the top-left corner of the hero video --- */
+.hero-contact { position: absolute; top: 1rem; left: clamp(1.5rem, 6vw, 5rem); z-index: 2; display: flex; gap: .6rem; }
+.hero-contact a {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255, 255, 255, .15); border: 2px solid rgba(255, 255, 255, .7); color: #fff;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s, color .15s, transform .15s, border-color .15s;
+}
+.hero-contact svg { width: 22px; height: 22px; fill: currentColor; }
+/* Highlight on hover and on keyboard focus: gold circle, dark icon, slight lift */
+.hero-contact a:hover, .hero-contact a:focus-visible { background: var(--accent); border-color: var(--accent); color: var(--brand-dark); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .hero-contact a { transition: none; } .hero-contact a:hover { transform: none; } }
+.hero-text { padding-top: 5rem; }              /* room for the icons above the text */
+@media (max-width: 600px) {
+  .hero-contact { top: .75rem; left: 16px; }
+  .hero-text { padding-top: 4.5rem; }
+}
+
+/* "(We Also Do Long Distance, Just Call Us for Details)" under the areas line */
+.hero-text .hero-note { margin: -.6rem 0 1rem; font-size: .98rem; font-style: italic; }
+.hero-note a { color: var(--accent); font-weight: 700; }
+@media (max-width: 600px) { .hero-text .hero-note { font-size: .9rem; margin: -.4rem 0 .8rem; } }
+
+/* --- Header phone block (top right on computers) --- */
+.header-call {
+  display: flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--brand-dark);
+  padding: .35rem 1rem .35rem .4rem; border-radius: 999px; border: 2px solid var(--line); background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+.header-call-icon {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; flex: none;
+  background: var(--brand); color: #fff; transition: background .15s, color .15s;
+}
+.header-call-icon svg { width: 20px; height: 20px; fill: currentColor; }
+.header-call-text { display: flex; flex-direction: column; line-height: 1.15; }
+.header-call-label { font-size: .8rem; font-weight: 700; color: #4a5d70; display: flex; align-items: center; gap: .35rem; }
+.badge-247 { background: var(--accent); color: var(--brand-dark); border-radius: 6px; padding: 0 .35rem; font-size: .75rem; font-weight: 800; }
+.header-call-number { font-size: 1.2rem; font-weight: 800; letter-spacing: .01em; }
+/* Hover and keyboard focus: blue outline, gold phone circle */
+.header-call:hover, .header-call:focus-visible { border-color: var(--brand); box-shadow: 0 4px 14px rgba(0, 58, 99, .15); }
+.header-call:hover .header-call-icon, .header-call:focus-visible .header-call-icon { background: var(--accent); color: var(--brand-dark); }
+:root[data-contrast="high"] .header-call-label { color: #000; }
+@media (prefers-reduced-motion: reduce) { .header-call, .header-call-icon { transition: none; } }
+/* Smaller laptops: tighter spacing and a slightly smaller logo so everything stays on one row */
+@media (min-width: 901px) and (max-width: 1240px) {
+  .header { gap: .75rem; padding: .6rem 1rem; }
+  .nav { gap: .9rem; }
+  .brand-logo-full { height: 52px; }
+  .header-call { padding-right: .8rem; gap: .5rem; }
+  .header-call-icon { width: 34px; height: 34px; }
+  .header-call-label { font-size: .72rem; }
+  .header-call-number { font-size: 1.05rem; }
+}
+/* Narrowest laptop widths: just the round phone icon (still tappable, still read out by screen readers) */
+@media (min-width: 901px) and (max-width: 979px) {
+  .header-call { padding: .3rem; }
+  .header-call-text { display: none; }
+}
+
+/* --- Footer email lines: one line each ---
+   Computers: the contact column (last) gets more width than the link columns.
+   Phones: the text size follows the screen width so the support address fits. */
+.footer-email { font-size: .92rem; overflow-wrap: anywhere; }  /* at very big "Aa" sizes it may wrap rather than run off the edge */
+@media (min-width: 901px) { .footer-grid { grid-template-columns: 1.3fr .8fr .8fr 1.6fr; } }
+@media (max-width: 600px) { .footer-email { font-size: min(.92rem, 4.4vw); } }
+@media (min-width: 601px) and (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; } } /* tablets: two wide columns */
+@media (min-width: 601px) { .footer-email { font-size: 1rem; } } /* tablets and computers have room for the normal size */
+
+/* Phones and small tablets: a smaller phone block between the logo and the ☰ button.
+   These rules must come after the .header-call rules above so they take effect. */
+@media (max-width: 900px) {
+  .header-call { display: flex; margin-left: auto; padding: .2rem .7rem .2rem .2rem; gap: .45rem; }
+  .header-call-icon { width: 34px; height: 34px; }
+  .header-call-icon svg { width: 17px; height: 17px; }
+  .header-call-label { font-size: .7rem; }
+  .header-call-number { font-size: .95rem; }
+  .menu-toggle { margin-left: .5rem; }
+}
+@media (max-width: 600px) {
+  .header { gap: .4rem; padding: .5rem .75rem; }
+  .brand-logo-full { height: 38px; }
+  .menu-toggle { width: 44px; height: 44px; }
+  .header-call { padding: .15rem .55rem .15rem .15rem; gap: .35rem; border-width: 1.5px; }
+  .header-call-icon { width: 30px; height: 30px; }
+  .header-call-icon svg { width: 15px; height: 15px; }
+  .header-call-words { display: none; }          /* only the 24/7 badge above the number */
+  .badge-247 { font-size: .62rem; }
+  .header-call-number { font-size: .82rem; }
+}
+/* Very narrow phones: just the round phone icon */
+@media (max-width: 369px) {
+  .header-call { padding: .15rem; }
+  .header-call-text { display: none; }
+}
+/* Phones with the two biggest "Aa" text sizes: just the round icon, so the logo keeps its size */
+@media (max-width: 600px) {
+  :root[data-text-level="2"] .header-call-text, :root[data-text-level="3"] .header-call-text { display: none; }
+  :root[data-text-level="2"] .header-call, :root[data-text-level="3"] .header-call { padding: .15rem; }
+}
+/* Phones: bigger logo, slimmer phone block next to it */
+@media (max-width: 600px) {
+  .brand-logo-full { height: 44px; }
+  .header-call { padding: .12rem .5rem .12rem .12rem; gap: .3rem; }
+  .header-call-icon { width: 28px; height: 28px; }
+  .header-call-icon svg { width: 14px; height: 14px; }
+  .badge-247 { font-size: .58rem; }
+  .header-call-number { font-size: .76rem; }
+}
+/* Narrow phones (under 370px): bigger logo leaves room for the round icon only */
+@media (max-width: 369px) {
+  .header-call { padding: .12rem; }
+  .header-call-text { display: none; }
+  .brand-logo-full { height: 42px; }
+}
+.header-call-number { white-space: nowrap; }                  /* the number never splits over two lines */
+@media (min-width: 370px) and (max-width: 389px) { .brand-logo-full { height: 41px; } }  /* small iPhones: a touch smaller so the block fits */
+@media (max-width: 399px) {                                   /* "Aa" size 2 on small phones: icon only */
+  :root[data-text-level="1"] .header-call-text { display: none; }
+  :root[data-text-level="1"] .header-call { padding: .12rem; }
+}
+
+/* --- Hero contact icons with labels (Call, Text, WhatsApp, Email) ---
+   The link holds a round icon and a small label; hovering the link highlights the circle. */
+.hero-contact { gap: .5rem; }
+.hero-contact a {
+  width: auto; height: auto; border: 0; background: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+  display: flex; flex-direction: column; align-items: center; gap: .2rem; text-decoration: none; color: #fff; border-radius: 12px; padding: 0 .1rem;
+}
+.hero-contact-circle {
+  display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255, 255, 255, .15); border: 2px solid rgba(255, 255, 255, .7);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s, color .15s, transform .15s, border-color .15s;
+}
+.hero-contact-label { font-size: .72rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0, 0, 0, .7); }
+.hero-contact a:hover, .hero-contact a:focus-visible { background: none; transform: none; color: #fff; }
+.hero-contact a:hover .hero-contact-circle, .hero-contact a:focus-visible .hero-contact-circle {
+  background: var(--accent); border-color: var(--accent); color: var(--brand-dark); transform: translateY(-2px);
+}
+.hero-contact a:hover .hero-contact-label { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .hero-contact-circle { transition: none; } .hero-contact a:hover .hero-contact-circle { transform: none; } }
+.hero-text { padding-top: 6rem; }                /* room for the icons and labels */
+@media (max-width: 600px) {
+  .hero-contact-circle { width: 42px; height: 42px; }
+  .hero-text { padding-top: 5.5rem; }
+}
+
+/* --- "What We Offer" cards: a short last row is centred instead of leaving an empty gap ---
+   Cards wrap like text; each screen size sets how many fit in a row. */
+.offer-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+.offer-cards > .card { flex: 0 1 100%; }                                                        /* phones: one per row */
+@media (min-width: 416px) { .offer-cards > .card { flex-basis: calc((100% - 1rem) / 2); } }      /* big phones, tablets: 2 per row */
+@media (min-width: 900px) { .offer-cards > .card { flex-basis: calc((100% - 2rem) / 3); } }      /* small laptops: 3 per row */
+@media (min-width: 1100px) { .offer-cards > .card { flex-basis: calc((100% - 4rem) / 5); } }     /* computers: all 5 in one row */
+
+/* Scrolling to the prices stops just below the sticky header on computers (on phones the header scrolls away) */
+#prices { scroll-margin-top: 90px; }
+@media (max-width: 600px) { #prices { scroll-margin-top: 0; } }
+
+/* Phone menu: Text, WhatsApp and Email side by side under the Call button */
+.mobile-contact-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+.mobile-contact-row .mobile-call { padding: .8rem .3rem; font-size: 1rem; }
+/* Big text sizes: stack them so the words fit */
+:root[data-text-level="2"] .mobile-contact-row, :root[data-text-level="3"] .mobile-contact-row { grid-template-columns: 1fr; }
+.mobile-contact-row .mobile-call { display: flex; align-items: center; justify-content: center; margin-top: .5rem; }

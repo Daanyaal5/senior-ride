@@ -1,0 +1,6 @@
+# EXTRA FEES in Canadian dollars, TAX INCLUDED. Only change the amount column.
+fee,amount
+assistance_per_hour,25
+assistance_max_hours,8
+urgent_ride,99
+waiting_per_30_min,20

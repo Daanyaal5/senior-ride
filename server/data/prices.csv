@@ -1,0 +1,16 @@
+# TRIP PRICES in Canadian dollars, TAX INCLUDED. The same price applies in both directions.
+# Area names must match areas.csv exactly. Use * to mean "any area we serve".
+# A line for two exact areas always wins over a line with *.
+# A trip with no matching line asks the customer to call for a price.
+from,to,price
+Halifax,Halifax,135
+Halifax,Dartmouth,150
+Halifax,Sackville,175
+Halifax Airport,Halifax,185
+Halifax Airport,Dartmouth,165
+Halifax Airport,Sackville,150
+Dartmouth,Dartmouth,100
+Dartmouth,Sackville,170
+Sackville,Sackville,100
+Bedford,*,150
+Hammonds Plains,*,150

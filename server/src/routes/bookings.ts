@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import crypto from "crypto";
 import { calculateFare, cleanHours, ContactUsError, priceList, Place } from "../services/fare.js";
-import { EXTRA_CARE_PER_HOUR, URGENT_FEE, WAIT_FEE_PER_30_MIN } from "../config/pricing.js";
+import { getPriceData } from "../config/priceData.js";
 import { chargeAndSaveCard } from "../services/square.js";
 import { Booking, emailBusiness, emailCustomer } from "../services/bookingEmails.js";
 import { bookingLimiter } from "../middleware/rateLimit.js";
@@ -25,9 +25,16 @@ function makeReference(): string {
 const halifaxTime = (iso: string) =>
   new Date(iso).toLocaleString("en-CA", { timeZone: "America/Halifax", dateStyle: "full", timeStyle: "short" });
 
-// GET /api/bookings/prices: the price list for the home page.
+// GET /api/bookings/prices: the price list and fees, read from server/data/*.csv.
 router.get("/prices", (_req: Request, res: Response) => {
-  res.json({ prices: priceList(), extraCarePerHour: EXTRA_CARE_PER_HOUR, urgentFee: URGENT_FEE, waitFeePer30: WAIT_FEE_PER_30_MIN });
+  const { fees } = getPriceData();
+  res.json({
+    prices: priceList(),
+    extraCarePerHour: fees.assistancePerHour,
+    maxHours: fees.assistanceMaxHours,
+    urgentFee: fees.urgentRide,
+    waitFeePer30: fees.waitingPer30Min,
+  });
 });
 
 // POST /api/bookings/estimate: the price shown on the form while the customer fills it in.

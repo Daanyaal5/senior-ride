@@ -1,11 +1,8 @@
-import { AIRPORT, Zone, ZONES } from "../config/pricing.js";
+import { AIRPORT, AIRPORT_AREA } from "../config/pricing.js";
+import { Area, getPriceData } from "../config/priceData.js";
 
 // Canadian postal code, e.g. "B3R 0A7" or "b3r0a7". Group 1 is the first 3 characters.
 const POSTAL_CODE = /\b([A-Z]\d[A-Z])\s?\d[A-Z]\d\b/i;
-
-// When there is no postal code, check names in this order. Halifax is last because
-// "Halifax" also appears in the airport's name and in addresses for the whole region.
-const NAME_ORDER: Zone[] = ["airport", "dartmouth", "sackville", "halifax"];
 
 /** Straight-line distance in km between two points (haversine formula). */
 function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
@@ -14,15 +11,27 @@ function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: numb
   return 6371 * 2 * Math.asin(Math.sqrt(h));
 }
 
-/** Works out which area a place is in. Returns null when it is outside the areas we serve (long distance). */
-export function detectZone(place: { address: string; lat: number; lng: number }): Zone | null {
-  if (distanceKm(place, AIRPORT) <= AIRPORT.radiusKm) return "airport";
+/** True if any of the area's place names appears in the address text. */
+const nameMatches = (area: Area, text: string) => area.placeNames.some((n) => text.includes(n));
 
-  const postal = place.address.match(POSTAL_CODE);
-  if (postal) {
-    const prefix = postal[1].toUpperCase();
-    return (Object.keys(ZONES) as Zone[]).find((z) => ZONES[z].postalPrefixes.includes(prefix)) ?? null;
-  }
+/**
+ * Works out which area (from areas.csv) a place is in. Returns null when it is outside the areas we serve.
+ * Order: 1) near the airport terminal, 2) postal code, 3) place name in the address.
+ */
+export function detectZone(place: { address: string; lat: number; lng: number }): string | null {
+  const { areas } = getPriceData();
+  if (distanceKm(place, AIRPORT) <= AIRPORT.radiusKm) return AIRPORT_AREA;
+
   const text = place.address.toLowerCase();
-  return NAME_ORDER.find((z) => ZONES[z].placeNames.some((name) => text.includes(name))) ?? null;
+  const prefix = place.address.match(POSTAL_CODE)?.[1].toUpperCase();
+  if (prefix) {
+    const byPostal = areas.filter((a) => a.postalCodes.includes(prefix));
+    // Two areas can share a postal code (e.g. Bedford and Hammonds Plains). The place name decides between them.
+    if (byPostal.length) return (byPostal.find((a) => nameMatches(a, text)) ?? byPostal[0]).name;
+  }
+
+  // No postal code, or one we don't list: try the place names. Halifax is checked last, because
+  // "Halifax" also appears in the airport's name and in addresses for the whole region.
+  const ordered = [...areas.filter((a) => a.name !== "Halifax"), ...areas.filter((a) => a.name === "Halifax")];
+  return ordered.find((a) => a.name !== AIRPORT_AREA && nameMatches(a, text))?.name ?? null;
 }
